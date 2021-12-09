@@ -12,7 +12,9 @@ import model.Post;
 
 public class PostDao {
 	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
-
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "cse305";
+	
 	public List<Item> getSalesReport(Post post) {
 
 		/*
@@ -29,7 +31,7 @@ public class PostDao {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection(DB_URL, "root", "cse305");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 
 			String month = post.getExpireDate().split("-")[0];
 			String year = post.getExpireDate().split("-")[1];
