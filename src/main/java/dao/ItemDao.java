@@ -446,7 +446,7 @@ public class ItemDao {
 	}
 
 	public List<Item> getBestsellersForCustomer(String customerID) {
-		// TODO: Implementation
+		// TODO: Needs validation testing
 		/*
 		 * The students code to fetch data from the database will be written here. Each
 		 * record is required to be encapsulated as a "Item" class object and added to
@@ -462,65 +462,37 @@ public class ItemDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 
-			CallableStatement itemsSoldBySellerProc = con.prepareCall("{CALL ItemsSoldBySeller(?)}");
-			Statement getAuctionsST = con.createStatement();
+			CallableStatement bestSellersProc = con.prepareCall("{CALL PersonalBestSellers(?)}");
 			Statement getItemsST = con.createStatement();
 
-			itemsSoldBySellerProc.setInt("SellerID", Integer.parseInt(customerID));
-			boolean sellerHasMoreItems = itemsSoldBySellerProc.execute();
+			bestSellersProc.setInt("CustomerID", Integer.parseInt(customerID));
+			boolean sellerHasMoreItems = bestSellersProc.execute();
 
 			while (sellerHasMoreItems) {
-				ResultSet auctionShortInfo = itemsSoldBySellerProc.getResultSet();
-				while (auctionShortInfo.next()) {
-					ResultSet auctionRS = getAuctionsST.executeQuery(
-							"SELECT * FROM Auctions WHERE AuctionID=" + auctionShortInfo.getInt("AuctionID"));
+				ResultSet bestSellersInfo = bestSellersProc.getResultSet();
+				while (bestSellersInfo.next()) {
+					ResultSet itemRS = getItemsST
+							.executeQuery("SELECT * FROM Items WHERE ItemID=" + bestSellersInfo.getInt("ItemID"));
 
-					Map<Integer, Integer> bestSellingItemIDs = new HashMap<Integer, Integer>();
-					while (auctionRS.next()) {
-						int itemID =  auctionRS.getInt("ItemID");
-						
-						ResultSet itemRS = getItemsST
-								.executeQuery("SELECT * FROM Items WHERE ItemID=" + itemID);
-						while (itemRS.next()) {
-							if(!bestSellingItemIDs.containsKey(itemID)) {
-								bestSellingItemIDs.put(itemID, 1);
-							} else {
-								bestSellingItemIDs.put(itemID, bestSellingItemIDs.get(itemID) + 1);
-							}
-						}
+					while (itemRS.next()) {
+						Item item = new Item();
+						item.setItemID(itemRS.getInt("ItemID"));
+						item.setName(itemRS.getString("ItemName"));
+						item.setType(itemRS.getString("ItemType"));
+						item.setDescription(itemRS.getString("Description"));
+						item.setNumCopies(bestSellersInfo.getInt("NumAuctions"));
+						items.add(item);
+
 					}
 
 				}
 
-//				ResultSet itemRS = getItemsST
-//						.executeQuery("SELECT * FROM Items WHERE ItemID=" + auctionRS.getInt("ItemID"));
-//				itemRS.next();
-//				Item item = new Item();
-//				item.setItemID(itemRS.getInt("ItemID"));
-//				item.setName(itemRS.getString("ItemName"));
-//				item.setType(itemRS.getString("ItemType"));
-//				item.setDescription(itemRS.getString("Description"));
-//				item.setNumCopies(itemRS.getInt("NumInStock"));
-//				items.add(item);
-
-				sellerHasMoreItems = itemsSoldBySellerProc.getMoreResults();
+				sellerHasMoreItems = bestSellersProc.getMoreResults();
 			}
 
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
-		/* Sample data begins */
-//		for (int i = 0; i < 6; i++) {
-//			Item item = new Item();
-//			item.setItemID(123);
-//			item.setDescription("sample description");
-//			item.setType("BOOK");
-//			item.setName("Sample Book");
-//			item.setNumCopies(50);
-//			items.add(item);
-//		}
-		/* Sample data ends */
 
 		return items;
 
