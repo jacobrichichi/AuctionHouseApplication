@@ -12,9 +12,9 @@ public class LoginDao {
 	 * This class handles all the database operations related to login functionality
 	 */
 
-	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
+	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
 	private final String DB_ROOT_USR = "root";
-	private final String DB_ROOT_PW = "MyNewPass";
+	private final String DB_ROOT_PW = "cse305";
 
 	private final String QUERY_GET_ALL_USERS = "SELECT user FROM mysql.user";
 
@@ -27,15 +27,13 @@ public class LoginDao {
 		 * the password of the user, is given as method parameter Query to verify the
 		 * username and password and fetch the role of the user, must be implemented
 		 */
-		
-		Login login = new Login();
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println(DB_URL);
-			System.out.println(username);
-			System.out.println(password);
-			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
+			Connection con = DriverManager.getConnection(DB_URL, username, password);
+
+			Login login = new Login();
+			login.setUsername(username);
+			login.setPassword(password);
 
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT Email FROM Customers WHERE Email LIKE \'%" + username + "%\'");
@@ -44,13 +42,13 @@ public class LoginDao {
 				return login;
 			}
 
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentative R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("customerRepresentative");
 				return login;
 			}
 
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, Manager R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("manager");
 				return login;
@@ -61,7 +59,6 @@ public class LoginDao {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
 		return null;
 	}
 
@@ -94,16 +91,14 @@ public class LoginDao {
 			if(rs != null && rs.next()) {
 				con.setAutoCommit(false);
 
-				int i = st.executeUpdate("CREATE USER \'%" + login.getUsername() + "%\' IDENTIFIED BY \'%" + login.getPassword() + "%\'");
+				rs = st.executeQuery("CREATE USER \'%" + login.getUsername() + "%\' IDENTIFIED BY \'%" + login.getPassword() + "%\'");
+
 				if(login.getRole().equals("customer"))
-					i = st.executeUpdate("GRANT \'customer\' TO \'%" + login.getUsername() + "%\'");
-				else if(login.getRole().equals("customerRepresentative")) {
-					System.out.print("hi");
-					i = st.executeUpdate("GRANT \'customerrep\' TO \'%" + login.getUsername() + "%\'");
-					System.out.print("hi2");
-				}
+					rs = st.executeQuery("GRANT \'customer\' TO \'%" + login.getUsername() + "%\'");
+				else if(login.getRole().equals("customerRepresentative"))
+					rs = st.executeQuery("GRANT \'customerrep\' TO \'%" + login.getUsername() + "%\'");
 				else if (login.getRole().equals("manager"))
-					i = st.executeUpdate("GRANT \'manager\' TO \'%" + login.getUsername() + "%\'");
+					rs = st.executeQuery("GRANT \'manager\' TO \'%" + login.getUsername() + "%\'");
 
 				con.commit();
 
