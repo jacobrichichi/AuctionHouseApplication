@@ -25,7 +25,7 @@ public class ItemDao {
 
 		List<Item> items = new ArrayList<Item>();
 				
-		try {
+		/*try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdcb:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
@@ -45,7 +45,7 @@ public class ItemDao {
 		}
 		catch(Exception e) {
 			System.out.println(e);
-		}
+		}*/
 		return items;
 
 	}

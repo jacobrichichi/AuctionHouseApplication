@@ -25,7 +25,7 @@ public class LoginDao {
 		
 		Login login = new Login();
 		
-		try {
+		/*try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
@@ -42,7 +42,7 @@ public class LoginDao {
 			
 			else {
 				System.out.println("here");
-				rs = st.executeQuery("SELECT * FROM Employees WHERE Email = " + username + " AND Paswrd = " + password);
+				rs = st.executeQuery("SELECT * FROM Employees WHERE Email = \'" + username + "\' AND Paswrd = \'" + password + "\'");
 				
 				if(rs.next()) {
 					login.setUsername(username);
@@ -65,7 +65,7 @@ public class LoginDao {
 		}
 		catch(Exception e) {
 			System.out.println(e);
-		}
+		}*/
 		
 		/*Sample data begins*/
 		return login;

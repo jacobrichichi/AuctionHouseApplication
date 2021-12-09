@@ -25,7 +25,7 @@
 				String role = (String)session.getAttribute("role");
 				
 				//redirect to home page if already logged in
-				if(email != null) {
+				if(email != null && role != null) {
 					if(role.equals("manager")) {
 						response.sendRedirect("managerHome.jsp");
 					}

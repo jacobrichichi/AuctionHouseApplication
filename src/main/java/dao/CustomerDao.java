@@ -28,7 +28,7 @@ public class CustomerDao {
 		 */
 		
 		List<Customer> customers = new ArrayList<Customer>();
-
+		
 		/*
 		 * The students code to fetch data from the database based on searchKeyword will be written here
 		 * Each record is required to be encapsulated as a "Customer" class object and added to the "customers" List
@@ -39,10 +39,17 @@ public class CustomerDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * " +
-											"FROM Customers " +
-											"WHERE FirstName like\'%" + searchKeyword + "%\'"+
-											" or LastName like \'%" + searchKeyword + "%\'");
+			
+			String s = "SELECT * " +
+					"FROM Customers " +
+					"WHERE FirstName like\'%" + searchKeyword + "%\'"+
+					" or LastName like \'%" + searchKeyword + "%\'";
+			
+			if(searchKeyword == null) {
+				s = "SELECT * FROM Customers";
+			}
+			
+			ResultSet rs = st.executeQuery(s);
 			while(rs.next()) {
 				Customer customer = new Customer();
 				customer.setCustomerID(rs.getString("CustomerId"));
@@ -320,8 +327,9 @@ public class CustomerDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT UNIQUE C.* FROM Customers C, Auctions A "
+			ResultSet rs = st.executeQuery("SELECT DISTINCT C.* FROM Customers C, Auctions A "
 					+ "WHERE C.CustomerID = A.SellerID");
+			
 			while(rs.next()) {
 				Customer customer = new Customer();
 				customer.setCustomerID(rs.getString("CustomerId"));
@@ -363,10 +371,16 @@ public class CustomerDao {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
-			int i = st.executeUpdate("INSERT INTO Customers (CustomerID,Address,LastName,FirstName,City,State,ZipCode,Email,Rating) "
-					+ "VALUES (" + customer.getCustomerID() + "," + customer.getAddress() + "," + customer.getLastName() + "," + 
-					customer.getFirstName() + "," + customer.getCity() + "," + customer.getState() + "," +
-					customer.getZipCode() + "," + customer.getEmail() + "," + customer.getRating());
+			
+			String s = "INSERT INTO Customers (CustomerID,Address,LastName,FirstName,City,State,ZipCode,Email,Passwrd,Rating)\n\r "
+					+ "VALUES (" + customer.getCustomerID() + ",\'" + customer.getAddress() + "\',\'" + customer.getLastName() + "\',\'" + 
+					customer.getFirstName() + "\',\'" + customer.getCity() + "\',\'" + customer.getState() + "\',\'" +
+					customer.getZipCode() + "\',\'" + customer.getEmail() + "\',\'\',"  + customer.getRating();
+			System.out.println(s);
+			int i = st.executeUpdate("INSERT INTO Customers (CustomerID,Address,LastName,FirstName,City,State,ZipCode,Email,Passwrd,Rating) "
+					+ "VALUES (" + customer.getCustomerID() + ",\'" + customer.getAddress() + "\',\'" + customer.getLastName() + "\',\'" + 
+					customer.getFirstName() + "\',\'" + customer.getCity() + "\',\'" + customer.getState() + "\',\'" +
+					customer.getZipCode() + "\',\'" + customer.getEmail() + "\',\'\',"  + customer.getRating() + ")");
 			
 			if(i != 1) {
 				return "failure";

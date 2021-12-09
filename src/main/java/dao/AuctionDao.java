@@ -114,8 +114,8 @@ public class AuctionDao {
 											+ "WHERE A.ClosingDateTime > CURRENT_TIMESTAMP "
 											+ "AND A.OpeningDateTime < CURRENT_TIMESTAMP "
 											+ "AND E.SSN = A.Monitor "
-											+ "AND E.Email = " + employeeEmail);
-			
+											+ "AND E.Email = \'" + employeeEmail + "\'");
+			System.out.print(employeeEmail);			
 			
 			while(rs.next()) {
 				Auction auction = new Auction();
@@ -135,6 +135,8 @@ public class AuctionDao {
 		catch(Exception e) {
 			System.out.println(e);
 		}
+		
+		System.out.println(auctions);
 		return auctions;
 
 		

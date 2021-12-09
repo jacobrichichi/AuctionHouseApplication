@@ -28,7 +28,7 @@ public class BidDao {
 			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM AuctionTransactions T WHERE T.AuctionID = " + auctionID);
-			
+			 
 			while(rs.next()) {
 				Bid bid = new Bid();
 				bid.setAuctionID(rs.getInt("AuctionID"));
@@ -57,16 +57,26 @@ public class BidDao {
 		 * Query to get the bid history of all the auctions in which a customer participated, indicated by customerID, must be implemented
 		 */
 
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Bid bid = new Bid();
-			bid.setAuctionID(123);
-			bid.setCustomerID("123-12-1234");
-			bid.setBidTime("2008-12-11");
-			bid.setBidPrice(100);
-			bids.add(bid);			
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Statement st = con.createStatement();
+			String s = "SELECT * FROM AuctionTransactions T WHERE T.BidderID = " + customerID;
+			ResultSet rs = st.executeQuery(s);
+			
+			while(rs.next()) {
+				Bid bid = new Bid();
+				bid.setAuctionID(rs.getInt("AuctionID"));
+				bid.setCustomerID("" + rs.getInt("BidderID"));
+				bid.setBidPrice(rs.getInt("BidAmt"));
+				bid.setBidTime(rs.getString("BidTime"));
+				bids.add(bid);
+			}
+			
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return bids;
 	}

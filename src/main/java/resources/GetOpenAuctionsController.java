@@ -32,7 +32,8 @@ public class GetOpenAuctionsController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String employeeEmail = (String)request.getSession(false).getAttribute("employeeEmail");
+		System.out.print("controller");
+		String employeeEmail = (String)request.getSession(false).getAttribute("email");
 		AuctionDao auctionDao = new AuctionDao();
 		List<Auction> auctions = new ArrayList<Auction>();
 		auctions = auctionDao.getOpenAuctions(employeeEmail);
