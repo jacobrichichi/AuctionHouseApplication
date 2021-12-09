@@ -56,13 +56,13 @@ public class LoginDao {
 				return login;
 			}
 			
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + username + "%\'");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("customerRepresentative");
 				return login;
 			}
 			
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + username + "%\'");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("manager");
 				return login;
