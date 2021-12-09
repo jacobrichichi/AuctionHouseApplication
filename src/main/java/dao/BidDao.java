@@ -145,7 +145,7 @@ public class BidDao {
 			}
 			
 			s = "SELECT T.* FROM AuctionTransactions T, Auctions A, Customers C WHERE "
-					+ "T.AuctionID = A.AuctionID AND A.ItemID = I.ItemID "
+					+ "T.AuctionID = A.AuctionID AND T.BidderID = C.CustomerID "
 					+ "AND C.FirstName like\'%" + searchKeyword + "%\' OR C.LastName like\'%" + searchKeyword + "%\'";
 			rs = st.executeQuery(s);
 			
