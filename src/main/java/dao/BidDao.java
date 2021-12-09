@@ -99,13 +99,19 @@ public class BidDao {
 		 * Query to submit a bid by a customer, indicated by customerID, must be implemented
 		 * After inserting the bid data, return the bid details encapsulated in "bid" object
 		 */
-
-		/*Sample data begins*/
-		bid.setAuctionID(123);
-		bid.setCustomerID("123-12-1234");
-		bid.setBidTime("2008-12-11");
-		bid.setBidPrice(currentBid);
-		/*Sample data ends*/
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
+			Statement st = con.createStatement();
+			
+			String s = "INSERT INTO AuctionTransactions(AuctionID, BidderID, BidTime, BidAmt) VALUES(" + auctionID + ", " + customerID + ", CURRENT_TIMESTAMP, " + maxBid + ")";
+			int i = st.executeUpdate(s);
+			
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		
 		return bid;
 	}
@@ -122,15 +128,41 @@ public class BidDao {
 		 * The item name or the customer name can be searched with the provided searchKeyword
 		 */
 
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Bid bid = new Bid();
-			bid.setAuctionID(123);
-			bid.setCustomerID("123-12-1234");
-			bid.setBidTime("2008-12-11");
-			bid.setBidPrice(100);
-			bids.add(bid);			
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
+			Statement st = con.createStatement();
+			String s = "SELECT T.* FROM AuctionTransactions T, Auctions A, Items I WHERE T.AuctionID = A.AuctionID AND A.ItemID = I.ItemID AND I.ItemName like\'%" + searchKeyword + "%\'";
+			ResultSet rs = st.executeQuery(s);
+			
+			while(rs.next()) {
+				Bid bid = new Bid();
+				bid.setAuctionID(rs.getInt("AuctionID"));
+				bid.setCustomerID("" + rs.getInt("BidderID"));
+				bid.setBidPrice(rs.getInt("BidAmt"));
+				bid.setBidTime(rs.getString("BidTime"));
+				bids.add(bid);
+			}
+			
+			s = "SELECT T.* FROM AuctionTransactions T, Auctions A, Customers C WHERE "
+					+ "T.AuctionID = A.AuctionID AND A.ItemID = I.ItemID "
+					+ "AND C.FirstName like\'%" + searchKeyword + "%\' OR C.LastName like\'%" + searchKeyword + "%\'";
+			rs = st.executeQuery(s);
+			
+			while(rs.next()) {
+				Bid bid = new Bid();
+				bid.setAuctionID(rs.getInt("AuctionID"));
+				bid.setCustomerID("" + rs.getInt("BidderID"));
+				bid.setBidPrice(rs.getInt("BidAmt"));
+				bid.setBidTime(rs.getString("BidTime"));
+				bids.add(bid);
+			}
+			
 		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		/*Sample data ends*/
 		
 		return bids;
