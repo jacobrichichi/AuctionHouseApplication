@@ -34,14 +34,16 @@ public class PostDao {
 			String month = post.getExpireDate().split("-")[0];
 			String year = post.getExpireDate().split("-")[1];
 
-			Statement st = con.createStatement();
-			ResultSet auctionsRS = st.executeQuery("SELECT * FROM Auctions " + "WHERE (YEAR(ClosingDateTime) <= " + year
+			Statement auctionsST = con.createStatement();
+			ResultSet auctionsRS = auctionsST.executeQuery("SELECT * FROM Auctions WHERE (YEAR(ClosingDateTime) <= " + year
 					+ " AND MONTH(ClosingDateTime) <=" + month + " AND ClosingBid > 0)");
 
 			while (auctionsRS.next()) {
 				int itemID = auctionsRS.getInt("ItemID");
-				ResultSet itemsRS = st.executeQuery("SELECT * FROM Items WHERE ItemID=" + itemID);
-
+				Statement itemsST = con.createStatement();
+				ResultSet itemsRS = itemsST.executeQuery("SELECT * FROM Items WHERE ItemID=" + itemID);
+				itemsRS.next();
+								
 				Item item = new Item();
 				item.setName(itemsRS.getString("ItemName"));
 				item.setSoldPrice((int) auctionsRS.getFloat("ClosingBid"));
@@ -51,17 +53,6 @@ public class PostDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-//		List<Item> items = new ArrayList<Item>();
-
-		/* Sample data begins */
-//		for (int i = 0; i < 10; i++) {
-//			Item item = new Item();
-//			item.setName("Sample item");
-//			item.setSoldPrice(100);
-//			items.add(item);
-//		}
-		/* Sample data ends */
 
 		return items;
 
