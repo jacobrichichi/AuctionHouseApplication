@@ -61,7 +61,6 @@ public class LoginController extends HttpServlet {
 			else {
 				CustomerDao customerDao = new CustomerDao();
 				String customerID = customerDao.getCustomerID(username);
-				System.out.println(customerID);
 				request.getSession(true).setAttribute("customerID", customerID);
 				response.sendRedirect("home.jsp");	
 			}

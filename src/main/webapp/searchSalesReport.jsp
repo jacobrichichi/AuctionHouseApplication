@@ -43,7 +43,7 @@
 				    </select>
 				    <label for="year">Year</label>
    				    <select class="form-control" name="year">
-						<c:forEach var = "i" begin = "1900" end = "2018">
+						<c:forEach var = "i" begin = "1900" end = "2022">
 							<option value="${i}"> <c:out value = "${i}"/></option>
 						</c:forEach>
 				    </select>
