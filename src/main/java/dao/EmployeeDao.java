@@ -209,7 +209,7 @@ public class EmployeeDao {
 			employee.setStartDate(rs.getString("StartDate"));
 			employee.setHourlyRate(rs.getInt("HourlyRate"));
 			
-			rs2 = st.executeQuery("SELECT * FROM CustomerRepresentatives WHERE SSN = " + employee.getEmployeeID());
+			rs2 = st.executeQuery("SELECT * FROM CustomerRepresentative WHERE SSN = " + employee.getEmployeeID());
 			if(rs2.next()) {
 				employee.setLevel("CustomerRepresentative");
 			}

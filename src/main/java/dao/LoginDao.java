@@ -12,9 +12,9 @@ public class LoginDao {
 	 * This class handles all the database operations related to login functionality
 	 */
 
-	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
 	private final String DB_ROOT_USR = "root";
-	private final String DB_ROOT_PW = "cse305";
+	private final String DB_ROOT_PW = "MyNewPass";
 
 	private final String QUERY_GET_ALL_USERS = "SELECT user FROM mysql.user";
 
@@ -29,7 +29,7 @@ public class LoginDao {
 		 */
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection(DB_URL, username, password);
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 
 			Login login = new Login();
 			login.setUsername(username);
@@ -42,7 +42,7 @@ public class LoginDao {
 				return login;
 			}
 
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentative R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("customerRepresentative");
 				return login;
@@ -84,7 +84,7 @@ public class LoginDao {
 			if(login.getRole().equals("customer"))
 				rs = st.executeQuery("SELECT Email FROM Customers where Email LIKE \'%" + login.getUsername() + "%\'");
 			else if(login.getRole().equals("customerRepresentative"))
-				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
+				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentative R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 			else if (login.getRole().equals("manager"))
 				rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 
