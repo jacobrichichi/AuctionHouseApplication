@@ -14,7 +14,7 @@ public class PostDao {
 	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
 	private final String DB_ROOT_USR = "root";
 	private final String DB_ROOT_PW = "cse305";
-	
+
 	public List<Item> getSalesReport(Post post) {
 
 		/*
@@ -45,7 +45,7 @@ public class PostDao {
 				Statement itemsST = con.createStatement();
 				ResultSet itemsRS = itemsST.executeQuery("SELECT * FROM Items WHERE ItemID=" + itemID);
 				itemsRS.next();
-								
+
 				Item item = new Item();
 				item.setName(itemsRS.getString("ItemName"));
 				item.setSoldPrice((int) auctionsRS.getFloat("ClosingBid"));

@@ -17,15 +17,8 @@ public class LoginDao {
 	private final String DB_ROOT_PW = "cse305";
 
 	private final String QUERY_GET_ALL_USERS = "SELECT user FROM mysql.user";
-	
+
 	public Login login(String username, String password) {
-//		try {
-//			Class.forName("com.mysql.jdbc.Driver");
-//			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
-//			System.out.println(con.getClientInfo());
-//		} catch (Exception e) {
-//			System.out.println(e);
-//		}
 		/*
 		 * Return a Login object with role as "manager", "customerRepresentative" or
 		 * "customer" if successful login Else, return null The role depends on the type
@@ -34,42 +27,35 @@ public class LoginDao {
 		 * the password of the user, is given as method parameter Query to verify the
 		 * username and password and fetch the role of the user, must be implemented
 		 */
-
-		/* Sample data begins */
-//		Login login = new Login();
-//		login.setRole("customerRepresentative");
-//		return login;
-		/* Sample data ends */
-		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection(DB_URL, username, password);
-			
+
 			Login login = new Login();
 			login.setUsername(username);
 			login.setPassword(password);
-			
+
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT Email FROM Customers WHERE Email LIKE \'%" + username + "%\'");
 			while(rs.next()) {
 				login.setRole("customer");
 				return login;
 			}
-			
+
 			rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("customerRepresentative");
 				return login;
 			}
-			
+
 			rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("manager");
 				return login;
 			}
-			
+
 			return null;
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -77,6 +63,7 @@ public class LoginDao {
 	}
 
 	public String addUser(Login login) {
+	    //TODO: Requires validation testing
 		/*
 		 * Query to insert a new record for user login must be implemented login, which
 		 * is the "Login" Class object containing username and password for the new
@@ -86,21 +73,21 @@ public class LoginDao {
 		 * on successful insertion of a new user Return "failure" for an unsuccessful
 		 * database operation
 		 */
-		
+
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
-			
+
 			Statement st = con.createStatement();
 			ResultSet rs = null;
-			
+
 			if(login.getRole().equals("customer"))
 				rs = st.executeQuery("SELECT Email FROM Customers where Email LIKE \'%" + login.getUsername() + "%\'");
 			else if(login.getRole().equals("customerRepresentative"))
 				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 			else if (login.getRole().equals("manager"))
 				rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
-						
+
 			if(rs != null && rs.next()) {
 				con.setAutoCommit(false);
 
@@ -112,9 +99,9 @@ public class LoginDao {
 					rs = st.executeQuery("GRANT \'customerrep\' TO \'%" + login.getUsername() + "%\'");
 				else if (login.getRole().equals("manager"))
 					rs = st.executeQuery("GRANT \'manager\' TO \'%" + login.getUsername() + "%\'");
-				
+
 				con.commit();
-				
+
 				return "success";
 
 			}
@@ -122,12 +109,8 @@ public class LoginDao {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
-		return "failure";
 
-		/* Sample data begins */
-//		return "success";
-		/* Sample data ends */
+		return "failure";
 	}
 
 }

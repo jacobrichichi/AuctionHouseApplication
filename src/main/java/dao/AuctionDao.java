@@ -1,5 +1,9 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,22 +23,30 @@ public class AuctionDao {
 		 * Each record is required to be encapsulated as a "Auction" class object and added to the "auctions" ArrayList
 		 * Query to get data about all the auctions should be implemented
 		 */
-		
-		/*Sample data begins*/
-		for (int i = 0; i < 10; i++) {
-			Auction auction = new Auction();
-			auction.setAuctionID(1);
-			auction.setBidIncrement(10);
-			auction.setMinimumBid(10);
-			auction.setCopiesSold(12);
-			auction.setItemID(1234);
-			auction.setClosingBid(120);
-			auction.setCurrentBid(120);
-			auction.setCurrentHighBid(120);
-			auction.setReserve(10);
-			auctions.add(auction);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Statement st = con.createStatement();
+			System.out.println(1);
+			ResultSet rs = st.executeQuery("SELECT * " +
+											"FROM Auctions");
+			while(rs.next()) {
+				Auction auction = new Auction();
+				auction.setAuctionID(rs.getInt("AuctionID"));
+				auction.setItemID(rs.getInt("ItemID"));
+				auction.setBidIncrement(rs.getInt("Increment"));
+				auction.setMinimumBid(rs.getInt("MinimumBid"));
+				auction.setMonitor(rs.getInt("Monitor"));
+				auction.setClosingBid(rs.getInt("ClosingBid"));
+				auction.setCurrentBid(rs.getInt("CurrentBid"));
+				auction.setCurrentHighBid(rs.getInt("CurrentHighBid"));
+				auction.setReserve(rs.getInt("Reserve"));
+				auctions.add(auction);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
 		return auctions;
 
@@ -51,21 +63,33 @@ public class AuctionDao {
 		 * customerID is the customer's primary key, given as method parameter
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 5; i++) {
-			Auction auction = new Auction();
-			auction.setAuctionID(1);
-			auction.setBidIncrement(10);
-			auction.setMinimumBid(10);
-			auction.setCopiesSold(12);
-			auction.setItemID(1234);
-			auction.setClosingBid(120);
-			auction.setCurrentBid(120);
-			auction.setCurrentHighBid(120);
-			auction.setReserve(10);
-			auctions.add(auction);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Statement st = con.createStatement();
+			System.out.println(2);
+			ResultSet rs = st.executeQuery("SELECT UNIQUE A.* " +
+											"FROM Auctions A, AuctionTransactions T " +
+											"WHERE A.AuctionID = T.AuctionID AND T.BidderID = " + customerID);
+			while(rs.next()) {
+				Auction auction = new Auction();
+				auction.setAuctionID(rs.getInt("AuctionID"));
+				auction.setItemID(rs.getInt("ItemID"));
+				auction.setBidIncrement(rs.getInt("Increment"));
+				auction.setMinimumBid(rs.getInt("MinimumBid"));
+				//auction.setCopiesSold(rs.getInt("CopiesSold"));
+				auction.setMonitor(rs.getInt("Monitor"));
+				auction.setClosingBid(rs.getInt("ClosingBid"));
+				auction.setCurrentBid(rs.getInt("CurrentBid"));
+				auction.setCurrentHighBid(rs.getInt("CurrentHighBid"));
+				auction.setReserve(rs.getInt("Reserve"));
+				auctions.add(auction);
+			}
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
 		
 		return auctions;
 
@@ -81,22 +105,36 @@ public class AuctionDao {
 		 * employeeEmail is the email ID of the customer representative, which is given as method parameter
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 5; i++) {
-			Auction auction = new Auction();
-			auction.setAuctionID(1);
-			auction.setBidIncrement(10);
-			auction.setMinimumBid(10);
-			auction.setCopiesSold(12);
-			auction.setItemID(1234);
-			auction.setClosingBid(120);
-			auction.setCurrentBid(120);
-			auction.setCurrentHighBid(120);
-			auction.setReserve(10);
-			auctions.add(auction);
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println(3);
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Statement st = con.createStatement();
+			ResultSet rs = st.executeQuery("SELECT A.* FROM Auctions A, Employees E "
+											+ "WHERE A.ClosingDateTime > CURRENT_TIMESTAMP "
+											+ "AND A.OpeningDateTime < CURRENT_TIMESTAMP "
+											+ "AND E.SSN = A.Monitor "
+											+ "AND E.Email = " + employeeEmail);
+			
+			
+			while(rs.next()) {
+				Auction auction = new Auction();
+				auction.setAuctionID(rs.getInt("AuctionID"));
+				auction.setItemID(rs.getInt("ItemID"));
+				auction.setBidIncrement(rs.getInt("Increment"));
+				auction.setMinimumBid(rs.getInt("MinimumBid"));
+				//auction.setCopiesSold(rs.getInt("CopiesSold"));
+				auction.setMonitor(rs.getInt("Monitor"));
+				auction.setClosingBid(rs.getInt("ClosingBid"));
+				auction.setCurrentBid(rs.getInt("CurrentBid"));
+				auction.setCurrentHighBid(rs.getInt("CurrentHighBid"));
+				auction.setReserve(rs.getInt("Reserve"));
+				auctions.add(auction);
+			}
 		}
-		/*Sample data ends*/
-		
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		return auctions;
 
 		
@@ -111,6 +149,8 @@ public class AuctionDao {
 		 * The method should return a "success" string if the update is successful, else return "failure"
 		 */
 		/* Sample data begins */
+		
+		
 		return "success";
 		/* Sample data ends */
 	}
@@ -139,27 +179,84 @@ public class AuctionDao {
 		 * All the objects must be added in the "output" list and returned
 		 */
 		
-		/*Sample data begins*/
-		for (int i = 0; i < 4; i++) {
-			item.setItemID(123);
-			item.setDescription("sample description");
-			item.setType("BOOK");
-			item.setName("Sample Book");
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Statement st = con.createStatement();
+			System.out.println(4);
+			ResultSet rs = st.executeQuery("SELECT * "
+											+ "FROM Auctions A "
+											+ "WHERE A.AuctionID = " + auctionID);
 			
-			bid.setCustomerID("123-12-1234");
-			bid.setBidPrice(120);
+			auction.setAuctionID(rs.getInt("AuctionID"));
+			auction.setItemID(rs.getInt("ItemID"));
+			auction.setBidIncrement(rs.getInt("Increment"));
+			auction.setMinimumBid(rs.getInt("MinimumBid"));
+			//auction.setCopiesSold(rs.getInt("CopiesSold"));
+			auction.setMonitor(rs.getInt("Monitor"));
+			auction.setClosingBid(rs.getInt("ClosingBid"));
+			auction.setCurrentBid(rs.getInt("CurrentBid"));
+			auction.setCurrentHighBid(rs.getInt("CurrentHighBid"));
+			auction.setReserve(rs.getInt("Reserve"));
 			
-			customer.setCustomerID("123-12-1234");
-			customer.setFirstName("Shiyong");
-			customer.setLastName("Lu");
+			int highestBidderId = rs.getInt("BuyerID");
+			int currentBidAmount = auction.getCurrentBid();
+			int maxBidAmount = auction.getCurrentHighBid();
 			
-			auction.setMinimumBid(100);
-			auction.setBidIncrement(10);
-			auction.setCurrentBid(110);
-			auction.setCurrentHighBid(115);
-			auction.setAuctionID(Integer.parseInt(auctionID));
+			
+			rs = st.executeQuery("SELECT * "
+								+ "FROM AuctionTransactions T "
+								+ "WHERE T.AuctionID = " + auctionID
+								+ " AND T.BidAmt = " + currentBidAmount);
+			
+			bid.setAuctionID(Integer.parseInt(auctionID));
+			bid.setBidPrice(currentBidAmount);
+			bid.setBidTime(rs.getString("BidTime"));
+			bid.setCustomerID(rs.getString("BidderID"));
+			bid.setMaxBid(maxBidAmount);
+			
+			
+			
+			rs = st.executeQuery("SELECT * "
+					+ "FROM Items I "
+					+ "WHERE I.ItemID = " + itemID);
+			
+			/*private int itemID;
+			private String description;
+			private String type;
+			private String name;
+			private int numCopies;
+			private int yearManufactured;
+			private int soldPrice;*/
+			
+			item.setItemID(rs.getInt("ItemID"));
+			item.setDescription(rs.getString("Description"));
+			item.setType(rs.getString("ItemType"));
+			item.setName(rs.getString("ItemName"));
+			item.setNumCopies(rs.getInt("NumInStock"));
+			item.setYearManufactured(rs.getInt("YearMade"));
+			item.setSoldPrice(rs.getInt("NumInStock"));
+			
+			rs = st.executeQuery("SELECT * FROM Customers C WHERE C.CustomerID = " + highestBidderId);
+			
+			customer.setCustomerID(rs.getString("CustomerId"));
+			customer.setAddress(rs.getString("Address"));
+			customer.setLastName(rs.getString("LastName"));
+			customer.setFirstName(rs.getString("FirstName"));
+			customer.setCity(rs.getString("City"));
+			customer.setState(rs.getString("State"));
+			customer.setEmail(rs.getString("Email"));
+			customer.setZipCode(rs.getInt("ZipCode"));
+			customer.setTelephone(rs.getString("Telephone"));
+			customer.setCreditCard(rs.getString("CreditCardNum"));
+			customer.setRating(rs.getInt("Rating"));
 		}
-		/*Sample data ends*/
+		catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		
+		
 		
 		output.add(item);
 		output.add(bid);

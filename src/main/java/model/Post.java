@@ -6,6 +6,7 @@ public class Post {
 	private int auctionID;
 	private String postDate;
 	private String expireDate;
+
 	public String getCustomerID() {
 		return CustomerID;
 	}
