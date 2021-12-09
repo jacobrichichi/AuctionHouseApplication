@@ -48,7 +48,7 @@ public class LoginDao {
 				return login;
 			}
 
-			rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
+			rs = st.executeQuery("SELECT E.Email FROM Employees E, Manager R where E.Email LIKE \'%" + username + "%\' AND E.SSN = R.SSN");
 			while(rs.next()) {
 				login.setRole("manager");
 				return login;
@@ -86,7 +86,7 @@ public class LoginDao {
 			else if(login.getRole().equals("customerRepresentative"))
 				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentative R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 			else if (login.getRole().equals("manager"))
-				rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
+				rs = st.executeQuery("SELECT E.Email FROM Employees E, Manager R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 
 			if(rs != null && rs.next()) {
 				con.setAutoCommit(false);
