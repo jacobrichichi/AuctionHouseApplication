@@ -16,9 +16,9 @@ import model.Bid;
 import model.Item;
 
 public class ItemDao {
-	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
 	private final String DB_ROOT_USR = "root";
-	private final String DB_ROOT_PW = "cse305";
+	private final String DB_ROOT_PW = "MyNewPass";
 
 	public List<Item> getItems() {
 
@@ -44,7 +44,7 @@ public class ItemDao {
 				item.setName(rs.getString("ItemName"));
 				item.setType(rs.getString("ItemType"));
 				item.setDescription(rs.getString("Description"));
-				item.setNumCopies(rs.getInt("NumInStock"));
+				//item.setNumCopies(rs.getInt("NumInStock"));
 				items.add(item);
 			}
 
@@ -79,7 +79,7 @@ public class ItemDao {
 				item.setName(rs.getString("ItemName"));
 				item.setType(rs.getString("ItemType"));
 				item.setDescription(rs.getString("Description"));
-				item.setNumCopies(rs.getInt("NumInStock"));
+				//item.setNumCopies(rs.getInt("NumInStock"));
 				items.add(item);
 			}
 
@@ -130,6 +130,8 @@ public class ItemDao {
 		 * to be encapsulated as a "Item" class object and added to the "items"
 		 * ArrayList
 		 */
+		
+		System.out.println("hey");
 
 		List<Item> items = new ArrayList<Item>();
 		try {
@@ -159,7 +161,7 @@ public class ItemDao {
 						item.setName(rs.getString("ItemName"));
 						item.setType(rs.getString("ItemType"));
 						item.setDescription(rs.getString("Description"));
-						item.setNumCopies(rs.getInt("NumInStock"));
+						//item.setNumCopies(rs.getInt("NumInStock"));
 						items.add(item);
 					}
 				}
@@ -226,7 +228,7 @@ public class ItemDao {
 					item.setName(itemRS.getString("ItemName"));
 					item.setType(itemRS.getString("ItemType"));
 					item.setDescription(itemRS.getString("Description"));
-					item.setNumCopies(itemRS.getInt("NumInStock"));
+					//item.setNumCopies(itemRS.getInt("NumInStock"));
 					items.add(item);
 
 					Auction auction = new Auction();
@@ -353,7 +355,7 @@ public class ItemDao {
 					item.setName(itemRS.getString("ItemName"));
 					item.setType(itemRS.getString("ItemType"));
 					item.setDescription(itemRS.getString("Description"));
-					item.setNumCopies(itemRS.getInt("NumInStock"));
+					//item.setNumCopies(itemRS.getInt("NumInStock"));
 					items.add(item);
 
 					Auction auction = new Auction();
@@ -422,7 +424,7 @@ public class ItemDao {
 					item.setName(itemRS.getString("ItemName"));
 					item.setType(itemRS.getString("ItemType"));
 					item.setDescription(itemRS.getString("Description"));
-					item.setNumCopies(itemRS.getInt("NumInStock"));
+					//item.setNumCopies(itemRS.getInt("NumInStock"));
 					items.add(item);
 
 					Auction auction = new Auction();

@@ -14,6 +14,10 @@ import model.Item;
 
 public class AuctionDao {
 	
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "MyNewPass";
+	
 	public List<Auction> getAllAuctions() {
 		
 		List<Auction> auctions = new ArrayList<Auction>();
@@ -25,7 +29,7 @@ public class AuctionDao {
 		 */
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			System.out.println(1);
 			ResultSet rs = st.executeQuery("SELECT * " +
@@ -65,7 +69,7 @@ public class AuctionDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			System.out.println(2);
 			ResultSet rs = st.executeQuery("SELECT UNIQUE A.* " +
@@ -108,7 +112,7 @@ public class AuctionDao {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			System.out.println(3);
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT A.* FROM Auctions A, Employees E "
 											+ "WHERE A.ClosingDateTime > CURRENT_TIMESTAMP "
@@ -151,9 +155,40 @@ public class AuctionDao {
 		 * The method should return a "success" string if the update is successful, else return "failure"
 		 */
 		/* Sample data begins */
-		
-		
-		return "success";
+		 Auction auction = new Auction();
+	        try {
+	            Class.forName("com.mysql.jdbc.Driver");
+	            Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
+	            Statement st = con.createStatement();
+	            ResultSet rs = st.executeQuery("SELECT * FROM Auctions A WHERE A.AuctionID = " + auctionID);
+	            
+	            rs.next();
+	            auction.setAuctionID(rs.getInt("AuctionID"));
+	            auction.setItemID(rs.getInt("ItemID"));
+	            auction.setBidIncrement(rs.getInt("Increment"));
+	            auction.setMinimumBid(rs.getInt("MinimumBid"));
+	           // auction.setCopiesSold(rs.getInt("NumInStock"));
+	            auction.setMonitor(rs.getInt("Monitor"));
+	            auction.setClosingBid(rs.getInt("ClosingBid"));
+	            auction.setCurrentBid(rs.getInt("CurrentBid"));
+	            auction.setCurrentHighBid(rs.getInt("CurrentHighBid"));
+	            auction.setReserve(rs.getInt("Reserve"));
+
+	            String ins = "SELECT T.BidderID FROM AuctionTransactions T WHERE AuctionID = " + auction.getAuctionID() + " AND BidAmt = " + auction.getCurrentBid();
+	            rs = st.executeQuery(ins);
+	            
+	            rs.next();
+	            
+	            ins = "UPDATE Auctions SET BuyerID = " + rs.getInt("BidderID") + " WHERE AuctionID = " + auction.getAuctionID() ;
+	            int i = st.executeUpdate(ins);
+	            
+	            if (i != 1)
+	                return "failure";
+//	            con.close();
+	        } catch (Exception e) {
+	            System.out.println(e);
+	        }
+	        return "success";
 		/* Sample data ends */
 	}
 
@@ -183,7 +218,7 @@ public class AuctionDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			System.out.println(4);
 			ResultSet rs = st.executeQuery("SELECT * "
@@ -235,9 +270,9 @@ public class AuctionDao {
 			item.setDescription(rs.getString("Description"));
 			item.setType(rs.getString("ItemType"));
 			item.setName(rs.getString("ItemName"));
-			item.setNumCopies(rs.getInt("NumInStock"));
+			//item.setNumCopies(rs.getInt("NumInStock"));
 			item.setYearManufactured(rs.getInt("YearMade"));
-			item.setSoldPrice(rs.getInt("NumInStock"));
+			//item.setSoldPrice(rs.getInt("NumInStock"));
 			
 			rs = st.executeQuery("SELECT * FROM Customers C WHERE C.CustomerID = " + highestBidderId);
 			

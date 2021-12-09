@@ -11,6 +11,10 @@ import model.Bid;
 import model.Customer;
 
 public class BidDao {
+	
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "MyNewPass";
 
 	public List<Bid> getBidHistory(String auctionID) {
 		
@@ -25,7 +29,7 @@ public class BidDao {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * FROM AuctionTransactions T WHERE T.AuctionID = " + auctionID);
 			 
@@ -59,7 +63,7 @@ public class BidDao {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			String s = "SELECT * FROM AuctionTransactions T WHERE T.BidderID = " + customerID;
 			ResultSet rs = st.executeQuery(s);

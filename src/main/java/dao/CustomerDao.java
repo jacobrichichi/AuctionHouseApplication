@@ -14,9 +14,9 @@ public class CustomerDao {
 	 * This class handles all the database operations related to the customer table
 	 */
 	
-	public static void main(String [] args) {
-		System.out.print(getCustomerMailingList());
-	}
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "MyNewPass";
 	
 	/**
 	 * @param String searchKeyword
@@ -37,7 +37,7 @@ public class CustomerDao {
 		/*Sample data begins*/
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			
 			String s = "SELECT * " +
@@ -105,12 +105,13 @@ public class CustomerDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT C.*, R.Revenue FROM Customers C, RevenueByCustomer R "
 											+ "WHERE C.CustomerID = R.SellerID "
 											+ "AND R.Revenue = (SELECT MAX(B.Revenue) FROM RevenueByCustomer B)");
 			
+			rs.next();
 			customer.setCustomerID(rs.getString("CustomerId"));
 			customer.setAddress(rs.getString("Address"));
 			customer.setLastName(rs.getString("LastName"));
@@ -143,7 +144,7 @@ public class CustomerDao {
 		
 	}
 
-	public static List<Customer> getCustomerMailingList() {
+	public List<Customer> getCustomerMailingList() {
 
 		/*
 		 * This method fetches the all customer mailing details and returns it
@@ -156,7 +157,7 @@ public class CustomerDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * " +
 											"FROM Customers");
@@ -211,7 +212,7 @@ public class CustomerDao {
 		/*Sample data begins*/
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * " +
 											"FROM Customers C " +
@@ -260,7 +261,7 @@ public class CustomerDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			int deleted = st.executeUpdate("DELETE " +
 											"FROM Customers C " +
@@ -294,7 +295,7 @@ public class CustomerDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT C.CustomerID " +
 											"FROM Customers C " +
@@ -325,7 +326,7 @@ public class CustomerDao {
 		try {
 			
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT DISTINCT C.* FROM Customers C, Auctions A "
 					+ "WHERE C.CustomerID = A.SellerID");
@@ -369,20 +370,19 @@ public class CustomerDao {
 		/*Sample data begins*/
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			
-			String s = "INSERT INTO Customers (CustomerID,Address,LastName,FirstName,City,State,ZipCode,Email,Passwrd,Rating)\n\r "
-					+ "VALUES (" + customer.getCustomerID() + ",\'" + customer.getAddress() + "\',\'" + customer.getLastName() + "\',\'" + 
+			String s = "INSERT INTO Customers (CustomerID,LastName,FirstName,Address,City,State,ZipCode, Telephone, Email, CreditCardNum, Rating) "
+					+ "VALUES (" + customer.getCustomerID() + ",\'" + customer.getLastName() + "\',\'" + customer.getAddress() + "\',\'"+
 					customer.getFirstName() + "\',\'" + customer.getCity() + "\',\'" + customer.getState() + "\',\'" +
-					customer.getZipCode() + "\',\'" + customer.getEmail() + "\',\'\',"  + customer.getRating();
+					customer.getZipCode() + "\',\'" + customer.getTelephone() + "\',\'"  + customer.getEmail() + "\', \'" + customer.getCreditCard() + "\'," + customer.getRating() + ")";
 			System.out.println(s);
-			int i = st.executeUpdate("INSERT INTO Customers (CustomerID,Address,LastName,FirstName,City,State,ZipCode,Email,Passwrd,Rating) "
-					+ "VALUES (" + customer.getCustomerID() + ",\'" + customer.getAddress() + "\',\'" + customer.getLastName() + "\',\'" + 
-					customer.getFirstName() + "\',\'" + customer.getCity() + "\',\'" + customer.getState() + "\',\'" +
-					customer.getZipCode() + "\',\'" + customer.getEmail() + "\',\'\',"  + customer.getRating() + ")");
+			int i = st.executeUpdate(s);
 			
+			System.out.println("here");
 			if(i != 1) {
+				System.out.println("fail");
 				return "failure";
 			}
 			
@@ -409,13 +409,13 @@ public class CustomerDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			
-			int i = st.executeUpdate("UPDATE Customers SET LastName = " + customer.getLastName() +
-					" FirstName = " + customer.getFirstName() + " Address = " + customer.getAddress() + " City = " + customer.getCity() +
-					" State = " + customer.getState() + " ZipCode = " + customer.getZipCode() + " Telephone = " + customer.getTelephone() +
-					" Email = " + customer.getEmail() + " CreditCardNum = " + customer.getCreditCard() + " Rating = " + customer.getRating()
+			int i = st.executeUpdate("UPDATE Customers SET LastName = \'" + customer.getLastName() +
+					"\', FirstName = \'" + customer.getFirstName() + "\', Address = \'" + customer.getAddress() + "\', City = \'" + customer.getCity() +
+					"\', State = \'" + customer.getState() + "\', ZipCode = \'" + customer.getZipCode() + "\', Telephone = \'" + customer.getTelephone() +
+					"\', Email = \'" + customer.getEmail() + "\', CreditCardNum = \'" + customer.getCreditCard() + "\', Rating = " + customer.getRating()
 					+ " WHERE CustomerID = " + customer.getCustomerID());
 			
 			if(i!=0) {

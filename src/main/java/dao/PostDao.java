@@ -11,9 +11,9 @@ import model.Item;
 import model.Post;
 
 public class PostDao {
-	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
 	private final String DB_ROOT_USR = "root";
-	private final String DB_ROOT_PW = "cse305";
+	private final String DB_ROOT_PW = "MyNewPass";
 
 	public List<Item> getSalesReport(Post post) {
 

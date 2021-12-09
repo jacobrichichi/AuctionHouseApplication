@@ -11,6 +11,10 @@ import model.Customer;
 import model.Employee;
 
 public class EmployeeDao {
+	
+	private final String DB_URL = "jdbc:mysql://localhost:3306/sys";
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "MyNewPass";
 	/*
 	 * This class handles all the database operations related to the employee table
 	 */
@@ -26,7 +30,7 @@ public class EmployeeDao {
 		 */
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			int i = st.executeUpdate("INSERT INTO Employees (SSN,"
 					+ "                LastName,"
@@ -68,14 +72,18 @@ public class EmployeeDao {
 		 */
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			
-			int i = st.executeUpdate("UPDATE Employees SET LastName = " + employee.getLastName() + 
-					" FirstName = " + employee.getFirstName() + " Address = " + employee.getAddress() + " City = " + employee.getCity() +
-					" State = " + employee.getState() + " ZipCode = " + employee.getZipCode() + " Telephone = " + employee.getTelephone() +
-					" StartDate = " + employee.getStartDate() + " HourlyRate = " + employee.getHourlyRate() + " Email = " + employee.getEmail()
-					+ " WHERE EmployeeID = " + employee.getEmployeeID());
+			String s = "UPDATE Employees SET LastName = \'" + employee.getLastName() + 
+					"\', FirstName = \'" + employee.getFirstName() + "\', Address = \'" + employee.getAddress() + "\', City = \'" + employee.getCity() +
+					"\', State = \'" + employee.getState() + "\', ZipCode = \'" + employee.getZipCode() + "\', Telephone = \'" + employee.getTelephone() +
+					"\', StartDate = \'" + employee.getStartDate() + "\', HourlyRate = " + employee.getHourlyRate() + ", Email = \'" + employee.getEmail()
+					+ "\' WHERE SSN = " + employee.getEmployeeID();
+			
+			System.out.println(s);
+			
+			int i = st.executeUpdate(s);
 			
 			if(i!=0) {
 				return "failure";
@@ -100,7 +108,7 @@ public class EmployeeDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			int deleted = st.executeUpdate("DELETE " +
 											"FROM Employees E " +
@@ -132,14 +140,14 @@ public class EmployeeDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * " +
 											"FROM Employees ");
 			ResultSet rs2;
 			while(rs.next()) {
 				Employee employee = new Employee();
-				employee.setEmployeeID(rs.getString("EmployeeId"));
+				employee.setEmployeeID("" + rs.getInt("SSN"));
 				employee.setAddress(rs.getString("Address"));
 				employee.setLastName(rs.getString("LastName"));
 				employee.setFirstName(rs.getString("FirstName"));
@@ -148,16 +156,16 @@ public class EmployeeDao {
 				employee.setEmail(rs.getString("Email"));
 				employee.setZipCode(rs.getInt("ZipCode"));
 				employee.setTelephone(rs.getString("Telephone"));
-				employee.setStartDate(rs.getString("CreditCard"));
-				employee.setHourlyRate(rs.getInt("Rating"));
+				employee.setStartDate(rs.getString("StartDate"));
+				employee.setHourlyRate(rs.getInt("HourlyRate"));
 				
-				rs2 = st.executeQuery("SELECT * FROM CustomerRepresentatives WHERE SSN = " + employee.getEmployeeID());
+				/*rs2 = st.executeQuery("SELECT * FROM CustomerRepresentative WHERE SSN = " + employee.getEmployeeID());
 				if(rs2.next()) {
-					employee.setLevel("CustomerRepresentative");
+					employee.setLevel("customerRepresentative");
 				}
 				else {
-					employee.setLevel("Manager");
-				}
+					employee.setLevel("manager");
+				}*/
 				
 				
 				employees.add(employee);
@@ -183,11 +191,11 @@ public class EmployeeDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
 			ResultSet rs = st.executeQuery("SELECT * " +
 											"FROM Employees E " +
-											"WHERE E.EmployeeId = " + employeeID);
+											"WHERE E.SSN = " + employeeID);
 			
 			employee.setEmployeeID(rs.getString("SSN"));
 			employee.setAddress(rs.getString("Address"));
@@ -229,12 +237,13 @@ public class EmployeeDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT E.*, R.Revenue FROM Employees C, RevenueByEmployee R "
+			ResultSet rs = st.executeQuery("SELECT E.*, R.Revenue FROM Employees E, RevenueByEmployee R "
 											+ "WHERE E.SSN = R.SSN "
 											+ "AND R.Revenue = (SELECT MAX(B.Revenue) FROM RevenueByEmployee B)");
 			
+			rs.next();
 			employee.setEmployeeID(rs.getString("SSN"));
 			employee.setAddress(rs.getString("Address"));
 			employee.setLastName(rs.getString("LastName"));
@@ -267,11 +276,11 @@ public class EmployeeDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/sys", "root", "MyNewPass");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			Statement st = con.createStatement();
-			ResultSet rs = st.executeQuery("SELECT SSN " +
+			ResultSet rs = st.executeQuery("SELECT E.SSN " +
 											"FROM Employee E " +
-											"WHERE E.email = " + username);
+											"WHERE E.Email = " + username);
 			id = rs.getString("SSN");
 		}
 		catch(Exception e) {
