@@ -13,8 +13,8 @@ public class LoginDao {
 	 */
 
 	private final String DB_URL = "jdbc:mysql://localhost:3306/cse305db";
-//	private final String DB_ROOT_USR = "root";
-//	private final String DB_ROOT_PW = "cse305";
+	private final String DB_ROOT_USR = "root";
+	private final String DB_ROOT_PW = "cse305";
 
 	private final String QUERY_GET_ALL_USERS = "SELECT user FROM mysql.user";
 	
@@ -89,7 +89,7 @@ public class LoginDao {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection con = DriverManager.getConnection(DB_URL, "root", "cse305");
+			Connection con = DriverManager.getConnection(DB_URL, DB_ROOT_USR, DB_ROOT_PW);
 			
 			Statement st = con.createStatement();
 			ResultSet rs = null;
@@ -97,9 +97,9 @@ public class LoginDao {
 			if(login.getRole().equals("customer"))
 				rs = st.executeQuery("SELECT Email FROM Customers where Email LIKE \'%" + login.getUsername() + "%\'");
 			else if(login.getRole().equals("customerRepresentative"))
-				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + login.getUsername() + "%\'");
+				rs = st.executeQuery("SELECT E.Email FROM Employees E, CustomerRepresentatives R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 			else if (login.getRole().equals("manager"))
-				rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + login.getUsername() + "%\'");
+				rs = st.executeQuery("SELECT E.Email FROM Employees E, Managers R where E.Email LIKE \'%" + login.getUsername() + "%\' AND E.SSN = R.SSN");
 						
 			if(rs != null && rs.next()) {
 				con.setAutoCommit(false);
